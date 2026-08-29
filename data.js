@@ -4,6 +4,15 @@ window.ROADBOOK = (function () {
   const tripStart = '2026-09-25T00:00:00+08:00';
   const tripEnd = '2026-10-05T23:59:59+08:00';
 
+  const keyReminders = [
+    {at:'2026-09-10T08:00:00+08:00',date:'9月10日',time:'按车站起售时间',title:'购买9月24日高铁票',desc:'提前在12306查询各出发站准确起售时刻，准备主选和备用车次。'},
+    {at:'2026-09-17T08:00:00+08:00',date:'9月17日',time:'08:00起尝试',title:'申请空铁联运免费住宿',desc:'进入“河北机场旅客服务”小程序，按页面要求提交铁路与航空行程。'},
+    {at:'2026-09-18T08:00:00+08:00',date:'9月18日',time:'当天复查',title:'免费住宿申请复查',desc:'若尚未开放或未通过，重新检查申请状态并咨询机场服务方。'},
+    {at:'2026-09-23T10:00:00+08:00',date:'9月23日',time:'当天完成',title:'住宿与接送最终确认',desc:'确认住宿审核、接送安排和次日送机时间，必要时启用备用酒店。'},
+    {at:'2026-09-24T12:00:00+08:00',date:'9月24日',time:'D0',title:'前往石家庄集结',desc:'按已确认的铁路行程出发，抵达后完成住宿与次日出发复核。'},
+    {at:'2026-09-25T00:00:00+08:00',date:'9月25日',time:'出发日',title:'提前抵达T2并乘机出发',desc:'按机票和航空公司要求完成值机、托运与安检，正式开启南疆行程。'}
+  ];
+
   const mapQueries = {
     '库尔勒机场': '库尔勒梨城机场', '巴州博物馆': '巴音郭楞蒙古自治州博物馆',
     '孔雀河': '库尔勒孔雀河', '喀什古城': '喀什古城', '骑仕大观园': '喀什骑仕大观园',
@@ -128,5 +137,5 @@ window.ROADBOOK = (function () {
     {cat:'车载补给',desc:'每车独立配置饮用水、耐放食品、纸巾、湿巾、垃圾袋和保温杯。'}
   ];
 
-  return {tripStart, tripEnd, mapQueries, poiCoords, days, restaurants, travelTips, budget, gear};
+  return {tripStart, tripEnd, keyReminders, mapQueries, poiCoords, days, restaurants, travelTips, budget, gear};
 })();
