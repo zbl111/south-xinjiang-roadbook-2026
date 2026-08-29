@@ -219,11 +219,11 @@ const ml=document.createElement('link');ml.rel='manifest';ml.href='data:applicat
 window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();window._pwa=e;const b=document.createElement('div');b.className='fixed top-0 left-0 right-0 z-50 bg-brand-600 text-white px-4 py-3 flex items-center justify-between text-xs font-semibold';b.style.paddingTop='env(safe-area-inset-top)';b.innerHTML='<span>📲 添加到主屏幕，离线也能看路书</span><button class="bg-white/20 px-3 py-1 rounded-lg active:scale-95">✕</button>';b.onclick=()=>{e.prompt();b.remove()};b.querySelector('button').onclick=ev=>{ev.stopPropagation();b.remove()};document.body.appendChild(b)});
 
 // ====== DATA（外部 data.js，支持 localStorage 覆盖）======
-var _localRB = (function(){ try{ var l=localStorage.getItem('roadbook_public_v6'); return l?JSON.parse(l):null; }catch(e){ return null; } })();
+var _localRB = (function(){ try{ var l=localStorage.getItem('roadbook_public_v7'); return l?JSON.parse(l):null; }catch(e){ return null; } })();
 var _RB = _localRB || window.ROADBOOK;
 var tripStartStr = _RB.tripStart, tripEndStr = _RB.tripEnd;
 var tripStart = tripStartStr ? new Date(tripStartStr) : null, tripEnd = tripEndStr ? new Date(tripEndStr) : null;
-var mapQueries = _RB.mapQueries, poiCoords = _RB.poiCoords, days = _RB.days, restaurants = _RB.restaurants, travelTips = _RB.travelTips, budget = _RB.budget, gear = _RB.gear;
+var keyReminders = _RB.keyReminders || [], mapQueries = _RB.mapQueries, poiCoords = _RB.poiCoords, days = _RB.days, restaurants = _RB.restaurants, travelTips = _RB.travelTips, budget = _RB.budget, gear = _RB.gear;
 // ====== STATE ======
 
 let activeView=0,activeTab=-1,map=null,markersLayer=null,dayPolylines=[],mapReady=false,kashiCat=0;
@@ -434,6 +434,17 @@ function rDash(){
     // 出发前不再展示卡片（用户已订齐）
   }
 
+  // === KEY REMINDERS / D0 ===
+  const nextReminder=keyReminders.find(r=>new Date(r.at)>=now);
+  const reminderRows=keyReminders.map(r=>{
+    const dt=new Date(r.at),past=dt<now,isNext=nextReminder===r;
+    const left=Math.max(0,Math.ceil((dt-now)/86400000));
+    const status=isNext?(left===0?'今天':'还有'+left+'天'):(past?'已到期':'待办');
+    const bg=isNext?'background:var(--terracotta-light);border-color:#E9B9A5':past?'background:rgba(245,241,234,.65);opacity:.62':'background:#fff';
+    return '<div class="rounded-xl p-3" style="border:1px solid var(--sand-light);'+bg+'"><div class="flex items-start gap-3"><div class="shrink-0 text-center" style="width:54px"><div style="font-size:10px;font-weight:800;color:'+(isNext?'var(--terracotta-deep)':'var(--slate)')+'">'+r.date+'</div><div style="font-size:9px;margin-top:2px;color:var(--slate)">'+r.time+'</div></div><div class="flex-1 min-w-0"><div class="flex items-center justify-between gap-2"><div style="font-size:11px;font-weight:800;color:var(--ink)">'+r.title+'</div><span style="font-size:8px;font-weight:800;padding:2px 6px;border-radius:6px;background:'+(isNext?'var(--terracotta)':'var(--paper-warm)')+';color:'+(isNext?'#fff':'var(--slate)')+';white-space:nowrap">'+status+'</span></div><div style="font-size:10px;line-height:1.55;margin-top:4px;color:var(--ink-secondary)">'+r.desc+'</div></div></div></div>';
+  }).join('');
+  const reminderHtml='<div class="glass-heavy p-4 anim-in"><div class="flex items-center justify-between mb-1"><div><div style="font-size:10px;font-weight:700;letter-spacing:.15em;color:var(--terracotta)">REMINDERS · D0</div><h3 style="font-size:14px;font-weight:900;color:var(--ink);margin-top:2px">关键时间与出发提醒</h3></div><span style="font-size:10px;font-weight:800;color:var(--terracotta-dark)">'+keyReminders.length+'项</span></div><p style="font-size:10px;color:var(--slate);margin-bottom:10px">自动突出下一项 · 车次、酒店和接送以最终确认结果为准</p><div class="space-y-2">'+reminderRows+'</div></div>';
+
   // === PROGRESS AXIS ===
   let dotsHtml=days.map((d,i)=>{
     const isCur=isTrip && currentDay===i;
@@ -471,7 +482,7 @@ function rDash(){
     return '<div onclick="switchTab('+realIdx+')" class="glass p-3.5 active:scale-[0.98] cursor-pointer flex items-center gap-3" style="'+(isFirst?'border-left:3px solid var(--terracotta);padding-left:13px':'')+'"><div class="w-10 h-10 rounded-xl flex items-center justify-center text-sm font-black shrink-0" style="'+dotBg+'">'+d.day+'</div><div class="flex-1 min-w-0"><div class="flex items-center justify-between gap-2"><span style="font-size:13px;font-weight:700;color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+d.title.replace(/^[^\s]+\s/,'')+'</span><span style="font-size:10px;font-weight:700;flex-shrink:0;color:'+starCol+'">强度 '+d.intensity+' · '+intensityLabel(d.intensity)+'</span></div><div style="font-size:10px;margin-top:3px;display:flex;align-items:center;gap:6px;color:var(--slate);white-space:nowrap"><span>'+d.date+'</span><span style="opacity:.4">·</span><span>⛰ 海拔 '+d.alt+'</span><span style="opacity:.4">·</span><span>🚗 里程 '+d.drive+'</span></div></div><div style="color:var(--slate);flex-shrink:0;font-size:14px">→</div></div>';
   }).join('')+'</div></div>';
 
-  return '<div class="space-y-3">'+heroHtml+todayHtml+axisHtml+shortcutHtml+upcomingHtml+'</div>';
+  return '<div class="space-y-3">'+heroHtml+todayHtml+reminderHtml+axisHtml+shortcutHtml+upcomingHtml+'</div>';
 }
 function rTrip(){
   const tabs=rTabs();
@@ -634,12 +645,12 @@ function rbClose(){document.getElementById('rbEditor').style.display='none';}
 function rbOpen(){document.getElementById('rbEditor').style.display='flex';}
 document.getElementById('rbEditBtn').addEventListener('click',rbOpen);
 document.getElementById('rbEditor').addEventListener('click',function(ev){if(ev.target===this)rbClose();});
-function rbCurData(){return {tripStart:tripStartStr,tripEnd:tripEndStr,mapQueries:mapQueries,poiCoords:poiCoords,days:days,restaurants:restaurants,travelTips:travelTips,budget:budget,gear:gear};}
+function rbCurData(){return {tripStart:tripStartStr,tripEnd:tripEndStr,keyReminders:keyReminders,mapQueries:mapQueries,poiCoords:poiCoords,days:days,restaurants:restaurants,travelTips:travelTips,budget:budget,gear:gear};}
 function rbExport(){var data=rbCurData();var blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='roadbook.json';a.click();URL.revokeObjectURL(a.href);document.getElementById('rbMsg').textContent='已导出 roadbook.json';}
-function rbSave(obj){var merged=Object.assign({},window.ROADBOOK,obj);localStorage.setItem('roadbook_public_v6',JSON.stringify(merged));document.getElementById('rbMsg').textContent='已保存，正在重新生成路书…';setTimeout(function(){location.reload();},300);}
+function rbSave(obj){var merged=Object.assign({},window.ROADBOOK,obj);localStorage.setItem('roadbook_public_v7',JSON.stringify(merged));document.getElementById('rbMsg').textContent='已保存，正在重新生成路书…';setTimeout(function(){location.reload();},300);}
 function rbImportFile(input){var f=input.files[0];if(!f)return;var r=new FileReader();r.onload=function(){try{rbSave(JSON.parse(r.result));}catch(e){document.getElementById('rbMsg').textContent='JSON 解析失败：'+e.message;}};r.readAsText(f);}
 function rbApplyText(){var tx=document.getElementById('rbText').value.trim();if(!tx){document.getElementById('rbMsg').textContent='请先粘贴 JSON';return;}try{rbSave(JSON.parse(tx));}catch(e){document.getElementById('rbMsg').textContent='JSON 解析失败：'+e.message;}}
-function rbReset(){localStorage.removeItem('roadbook_public_v6');document.getElementById('rbMsg').textContent='已恢复公开版默认数据，正在刷新…';setTimeout(function(){location.reload();},300);}
+function rbReset(){localStorage.removeItem('roadbook_public_v7');document.getElementById('rbMsg').textContent='已恢复公开版默认数据，正在刷新…';setTimeout(function(){location.reload();},300);}
 </script>
 
 </body>
