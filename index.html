@@ -251,9 +251,10 @@ h3{font-size:13px;font-weight:700;letter-spacing:0}
 <nav class="fixed bottom-0 left-0 right-0 z-50 px-3 pb-3 pt-1" style="padding-bottom:calc(env(safe-area-inset-bottom) + 12px)">
   <div class="nav-blur px-2 py-1.5 flex gap-1 max-w-md mx-auto">
     <button onclick="switchView(0)" id="btn0" class="relative flex-1 flex flex-col items-center gap-1 py-2.5 rounded-xl transition-all duration-200 active:scale-95 tab-on"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="2.4"/><circle cx="18" cy="18" r="2.4"/><path d="M8.4 6H15a3 3 0 0 1 0 6H9a3 3 0 0 0 0 6h6.4"/></svg><span class="text-[10px] font-semibold">行程</span></button>
-    <button onclick="switchView(1)" id="btn1" class="relative flex-1 flex flex-col items-center gap-1 py-2.5 rounded-xl transition-all duration-200 active:scale-95 tab-off"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6.5 9 3l6 3 6-3v15l-6 3-6-3-6 3z"/><path d="M9 3v15M15 6v15"/></svg><span class="text-[10px] font-semibold">地图</span><span class="badge">42</span></button>
-    <button onclick="switchView(2)" id="btn2" class="relative flex-1 flex flex-col items-center gap-1 py-2.5 rounded-xl transition-all duration-200 active:scale-95 tab-off"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3v7.5a2 2 0 0 0 2 2V21"/><path d="M5 3v4"/><path d="M9 3v4"/><path d="M17 3c-1.7 0-2.8 2-2.8 4.2 0 2.1 1.1 3.5 2.8 3.8V21"/></svg><span class="text-[10px] font-semibold">美食</span><span class="badge">13</span></button>
-    <button onclick="switchView(3)" id="btn3" class="relative flex-1 flex flex-col items-center gap-1 py-2.5 rounded-xl transition-all duration-200 active:scale-95 tab-off"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg><span class="text-[10px] font-semibold">安全</span><span class="badge pulse-badge">!</span></button>
+    <button onclick="switchView(1)" id="btn1" class="relative flex-1 flex flex-col items-center gap-1 py-2.5 rounded-xl transition-all duration-200 active:scale-95 tab-off"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="5" width="16" height="16" rx="2"/><path d="M8 3v4M16 3v4M4 10h16M8 14h3M8 17h6"/></svg><span class="text-[10px] font-semibold">提醒</span><span class="badge">6</span></button>
+    <button onclick="switchView(2)" id="btn2" class="relative flex-1 flex flex-col items-center gap-1 py-2.5 rounded-xl transition-all duration-200 active:scale-95 tab-off"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6.5 9 3l6 3 6-3v15l-6 3-6-3-6 3z"/><path d="M9 3v15M15 6v15"/></svg><span class="text-[10px] font-semibold">地图</span></button>
+    <button onclick="switchView(3)" id="btn3" class="relative flex-1 flex flex-col items-center gap-1 py-2.5 rounded-xl transition-all duration-200 active:scale-95 tab-off"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3v7.5a2 2 0 0 0 2 2V21"/><path d="M5 3v4"/><path d="M9 3v4"/><path d="M17 3c-1.7 0-2.8 2-2.8 4.2 0 2.1 1.1 3.5 2.8 3.8V21"/></svg><span class="text-[10px] font-semibold">美食</span></button>
+    <button onclick="switchView(4)" id="btn4" class="relative flex-1 flex flex-col items-center gap-1 py-2.5 rounded-xl transition-all duration-200 active:scale-95 tab-off"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg><span class="text-[10px] font-semibold">安全</span></button>
   </div>
 </nav>
 
@@ -483,14 +484,11 @@ function rDash(){
 
   // === KEY REMINDERS / D0 ===
   const nextReminder=keyReminders.find(r=>new Date(r.at)>=now);
-  const reminderRows=keyReminders.map(r=>{
-    const dt=new Date(r.at),past=dt<now,isNext=nextReminder===r;
-    const left=Math.max(0,Math.ceil((dt-now)/86400000));
-    const status=isNext?(left===0?'今天':'还有'+left+'天'):(past?'已到期':'待办');
-    const bg=isNext?'background:var(--terracotta-light);border-color:#E9B9A5':past?'background:rgba(245,241,234,.65);opacity:.62':'background:#fff';
-    return '<div class="rounded-xl p-3" style="border:1px solid var(--sand-light);'+bg+'"><div class="flex items-start gap-3"><div class="shrink-0 text-center" style="width:54px"><div style="font-size:10px;font-weight:800;color:'+(isNext?'var(--terracotta-deep)':'var(--slate)')+'">'+r.date+'</div><div style="font-size:9px;margin-top:2px;color:var(--slate)">'+r.time+'</div></div><div class="flex-1 min-w-0"><div class="flex items-center justify-between gap-2"><div style="font-size:11px;font-weight:800;color:var(--ink)">'+r.title+'</div><span style="font-size:8px;font-weight:800;padding:2px 6px;border-radius:6px;background:'+(isNext?'var(--terracotta)':'var(--paper-warm)')+';color:'+(isNext?'#fff':'var(--slate)')+';white-space:nowrap">'+status+'</span></div><div style="font-size:10px;line-height:1.55;margin-top:4px;color:var(--ink-secondary)">'+r.desc+'</div></div></div></div>';
-  }).join('');
-  const reminderHtml='<div class="glass-heavy p-4 anim-in"><div class="flex items-center justify-between mb-1"><div><div style="font-size:10px;font-weight:700;letter-spacing:.15em;color:var(--terracotta)">REMINDERS · D0</div><h3 style="font-size:14px;font-weight:900;color:var(--ink);margin-top:2px">关键时间与出发提醒</h3></div><span style="font-size:10px;font-weight:800;color:var(--terracotta-dark)">'+keyReminders.length+'项</span></div><p style="font-size:10px;color:var(--slate);margin-bottom:10px">自动突出下一项 · 车次、酒店和接送以最终确认结果为准</p><div class="space-y-2">'+reminderRows+'</div></div>';
+  let reminderHtml='';
+  if(nextReminder){
+    const dt=new Date(nextReminder.at),left=Math.max(0,Math.ceil((dt-now)/86400000));
+    reminderHtml='<button onclick="switchView(1)" class="glass-heavy p-4 anim-in w-full text-left active:scale-[0.99] transition-all" style="border-left:4px solid var(--terracotta)"><div class="flex items-center justify-between"><div><div style="font-size:10px;font-weight:800;letter-spacing:.15em;color:var(--terracotta)">下一项提醒 · '+(left===0?'今天':'还有'+left+'天')+'</div><h3 style="font-size:14px;font-weight:900;color:var(--ink);margin-top:4px">'+nextReminder.title+'</h3></div><span style="font-size:18px;color:var(--terracotta)">→</span></div><div style="font-size:11px;color:var(--ink-secondary);margin-top:8px">'+nextReminder.date+' · '+nextReminder.time+' · '+nextReminder.desc+'</div><div style="font-size:10px;font-weight:700;color:var(--terracotta-dark);margin-top:9px">查看全部 '+keyReminders.length+' 项提醒</div></button>';
+  }
 
   // === PROGRESS AXIS ===
   let dotsHtml=days.map((d,i)=>{
@@ -507,7 +505,7 @@ function rDash(){
 
   // === SHORTCUTS ===
   const sc=(icon,label,onclick,bg)=>'<button onclick="'+onclick+'" class="glass-heavy p-3 flex flex-col items-center gap-1.5 active:scale-95 transition-all"><div class="w-10 h-10 rounded-xl flex items-center justify-center text-base" style="background:'+bg+'">'+icon+'</div><div style="font-size:10px;font-weight:700;color:var(--ink)">'+label+'</div></button>';
-  const shortcutHtml='<div class="anim-in"><div class="grid grid-cols-4 gap-2">'+sc('🗺','地图','switchView(1)','linear-gradient(135deg,#EAF3FE,#D9E8F8)')+sc('🍽','美食','switchView(2)','linear-gradient(135deg,#FBF5E8,#F5E8C8)')+sc('💰','预算','openSheet(\'budget\')','linear-gradient(135deg,#EEF5EE,#D5E8D5)')+sc('🎒','装备','openSheet(\'gear\')','linear-gradient(135deg,#FBEEE8,#F5D5C0)')+'</div></div>';
+  const shortcutHtml='<div class="anim-in"><div class="grid grid-cols-4 gap-2">'+sc('🗺','地图','switchView(2)','linear-gradient(135deg,#EAF3FE,#D9E8F8)')+sc('🍽','美食','switchView(3)','linear-gradient(135deg,#FBF5E8,#F5E8C8)')+sc('💰','预算','openSheet(\'budget\')','linear-gradient(135deg,#EEF5EE,#D5E8D5)')+sc('🎒','装备','openSheet(\'gear\')','linear-gradient(135deg,#FBEEE8,#F5D5C0)')+'</div></div>';
 
   // === UPCOMING DAYS ===
   let startIdx,upcomingTitle;
@@ -536,10 +534,24 @@ function rTrip(){
   let c;if(activeTab===-1)c=rDash();else if(activeTab===-2)c=rGuide();else c=rDay(days[activeTab]);
   return `<div class="no-scroll flex gap-1.5 overflow-x-auto pb-2 mb-1">${tabs}</div><div class="flex justify-center gap-1 mb-2">${[...Array(12)].map((_,i)=>`<span class="rounded-full transition-all duration-300 ${i-2===activeTab?'w-4 bg-slate-800 h-1.5':'w-1.5 bg-slate-300 h-1.5'}"></span>`).join('')}</div>${c}`;
 }
+function rReminders(){
+  const now=new Date();
+  const nextReminder=keyReminders.find(r=>new Date(r.at)>=now);
+  const pending=keyReminders.filter(r=>new Date(r.at)>=now);
+  const past=keyReminders.filter(r=>new Date(r.at)<now);
+  const row=(r,isPast)=>{
+    const isNext=r===nextReminder,dt=new Date(r.at);
+    const left=Math.max(0,Math.ceil((dt-now)/86400000));
+    const status=isNext?(left===0?'今天':'还有 '+left+' 天'):(isPast?'已到期':'待办');
+    return '<div class="glass-heavy p-4" style="'+(isNext?'border-left:4px solid var(--terracotta);background:linear-gradient(135deg,#FFF9F4,#fff)':'')+(isPast?';opacity:.58':'')+'"><div class="flex items-start gap-3"><div class="shrink-0 rounded-xl text-center py-2" style="width:58px;background:'+(isNext?'var(--terracotta-light)':'var(--paper-warm)')+'"><div style="font-size:11px;font-weight:900;color:'+(isNext?'var(--terracotta-deep)':'var(--ink-secondary)')+'">'+r.date+'</div><div style="font-size:9px;margin-top:2px;color:var(--slate)">'+r.time+'</div></div><div class="flex-1 min-w-0"><div class="flex items-center justify-between gap-2"><h3 style="font-size:13px;font-weight:900;color:var(--ink)">'+r.title+'</h3><span style="font-size:9px;font-weight:800;padding:3px 7px;border-radius:7px;white-space:nowrap;background:'+(isNext?'var(--terracotta)':'var(--paper-warm)')+';color:'+(isNext?'#fff':'var(--slate)')+'">'+status+'</span></div><p style="font-size:11px;line-height:1.65;margin-top:6px;color:var(--ink-secondary)">'+r.desc+'</p></div></div></div>';
+  };
+  const group=(title,list,isPast)=>list.length?'<section><div class="flex items-center justify-between px-1 mb-2"><h2 style="font-size:12px;font-weight:800;color:var(--ink)">'+title+'</h2><span style="font-size:10px;color:var(--slate)">'+list.length+' 项</span></div><div class="space-y-2">'+list.map(r=>row(r,isPast)).join('')+'</div></section>':'';
+  return '<div class="space-y-4 anim-in"><div class="glass-heavy p-5" style="background:linear-gradient(135deg,#FFF7F0,#FAE8DC);border-color:#F0D5C8"><div style="font-size:10px;font-weight:800;letter-spacing:.17em;color:var(--terracotta-dark)">REMINDERS · D0</div><h1 style="font-size:21px;margin-top:4px">关键时间与出发提醒</h1><p style="font-size:11px;line-height:1.65;color:var(--ink-secondary);margin-top:7px">自动突出下一项。车次、住宿和接送信息以最终确认结果为准。</p></div>'+group('接下来',pending,false)+group('已过去',past,true)+'</div>';
+}
 function rMap(){
   return `<div class="glass rounded-2xl p-3 mb-3 anim-in"><h2 class="text-xs font-bold" style="color:var(--ink)">交互地图</h2><p class="text-[10px] text-slate mt-0.5">点击标记看详情 · 双指缩放 · 按天数切换路线</p></div><div class="no-scroll flex gap-1.5 overflow-x-auto pb-2 mb-2" id="mf">${days.map((d,i)=>`<button onclick="filterMap(${i})" id="md${i}" class="flex-shrink-0 px-3 py-1.5 rounded-xl text-[11px] font-semibold transition-all active:scale-95 ${i===0?'tab-on':'tab-off'}">D${d.day}</button>`).join('')}<button onclick="filterMap(-1)" id="mdAll" class="flex-shrink-0 px-3 py-1.5 rounded-xl text-[11px] font-semibold transition-all active:scale-95 tab-off">全部</button></div><div class="glass rounded-2xl overflow-hidden mb-3" style="height:420px" id="mapC"><div id="map" style="width:100%;height:100%;min-height:420px"></div></div><div class="glass rounded-2xl p-3 text-[11px] text-slate anim-in" id="mapInfo">点击地图标记查看详情 · 双指缩放 · 按天筛选路线</div>`;
 }
-function switchFoodCat(i){kashiCat=i;if(activeView===2)document.getElementById('mainContent').innerHTML=rFood();}
+function switchFoodCat(i){kashiCat=i;if(activeView===3)document.getElementById('mainContent').innerHTML=rFood();}
 function rFood(){
   const kashiCats=['硬核主食','街头小吃','甜品饮品'];
   const kashiIcons=['🍖','🥟','🍧'];
@@ -568,14 +580,15 @@ function rTips(){
 
 function switchView(i){
   activeView=i;
-  for(let j=0;j<4;j++)document.getElementById('btn'+j).className='relative flex-1 flex flex-col items-center gap-1 py-2.5 rounded-xl transition-all active:scale-95 '+(j===i?'tab-on':'tab-off');
+  for(let j=0;j<5;j++)document.getElementById('btn'+j).className='relative flex-1 flex flex-col items-center gap-1 py-2.5 rounded-xl transition-all active:scale-95 '+(j===i?'tab-on':'tab-off');
   const mc=document.getElementById('mainContent');
   if(i===0)mc.innerHTML=rTrip();
-  else if(i===1){
+  else if(i===1)mc.innerHTML=rReminders();
+  else if(i===2){
     mc.innerHTML=rMap();
     requestAnimationFrame(()=>requestAnimationFrame(()=>setTimeout(initMap,0)));
   }
-  else if(i===2)mc.innerHTML=rFood();
+  else if(i===3)mc.innerHTML=rFood();
   else mc.innerHTML=rTips();
   window.scrollTo({top:0,behavior:'smooth'});
   updateFloatToday();
