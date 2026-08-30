@@ -114,6 +114,10 @@ h3{font-size:13px;font-weight:700;letter-spacing:0}
 .text-body{font-size:12px;line-height:1.7;color:var(--ink-secondary)}
 .text-caption{font-size:11px;line-height:1.5;color:var(--slate)}
 #map{height:100%;width:100%;border-radius:var(--radius)}
+.route-marker{width:27px;height:27px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px;font-weight:900;border:2px solid #fff;box-shadow:0 3px 10px rgba(26,26,26,.28)}
+.route-marker.is-draft{border-style:dashed;opacity:.82}
+.map-status-dot{width:8px;height:8px;border-radius:50%;display:inline-block;flex:none}
+.leaflet-popup-content{margin:12px 14px;line-height:1.55}
 
 /* ====== P0: 浮动今日按钮 ====== */
 .float-today{
@@ -348,7 +352,26 @@ async function copyStoryCaption(day,index,btn){
   }
 }
 function gCoord(p){for(const[k,v]of Object.entries(poiCoords)){if(p.includes(k.replace(/[（(].*/,''))||k.includes(p.replace(/[（(].*/,'')))return v;}return null;}
-function dayPois(i){const r=[];days[i].items.forEach(it=>{const c=gCoord(it.p);if(c)r.push({name:it.p,coord:c,tag:it.tag,time:it.t,desc:it.d});});return r;}
+function itemStatus(d,it){
+  if(d.draft)return {key:'draft',label:'AI草案',color:'#9A7B4F'};
+  if(/待核实|待确认|尚未确定/.test((it.d||'')+(it.t||'')))return {key:'pending',label:'待核实',color:'#D97757'};
+  if(/备选|时间允许|视时间|穿插|合适才|到达较早/.test((it.t||'')+(it.p||'')))return {key:'backup',label:'顺路备选',color:'#3B82C4'};
+  return {key:'confirmed',label:'已确认',color:'#3F8A5B'};
+}
+function itemTargets(it){
+  if(it.navs&&it.navs.length)return it.navs.map(x=>({name:x.label,to:x.to}));
+  if(it.nav)return [{name:it.p,to:it.nav}];
+  if(!/🎵|✈|🚆|✓|😴|🧰/.test(it.tr||''))return [{name:it.p,to:it.p}];
+  return [];
+}
+function dayPois(i){
+  const d=days[i],r=[],seen=new Set();
+  d.items.forEach((it,itemIndex)=>itemTargets(it).forEach(x=>{
+    const id=itemIndex+'|'+x.to;if(seen.has(id))return;seen.add(id);
+    r.push({name:x.name,to:x.to,coord:gCoord(x.to)||gCoord(it.p),tag:it.tag,time:it.t,desc:it.d,status:itemStatus(d,it),itemIndex});
+  }));
+  return r.map((p,index)=>({...p,index:index+1,day:i+1}));
+}
 function allPois(){const a=[];days.forEach((d,i)=>{dayPois(i).forEach(p=>{p.day=i+1;a.push(p);});});return a;}
 const themeClr={must:'#ef4444',photo:'#0284c7',food:'#d97706',warn:'#ea580c',transit:'#16a34a'};
 const themeIco={must:'',photo:'',food:'',warn:'',transit:''};
@@ -412,7 +435,7 @@ function initMap(){
   tryTile();
   L.control.zoom({position:'bottomright'}).addTo(map);
   markersLayer=L.layerGroup().addTo(map);
-  days.forEach((d,di)=>{const p=dayPois(di);if(p.length>1){dayPolylines[di]=L.polyline(p.map(x=>x.coord),{color:['#a811eb','#0ea5e9','#f59e0b','#10b981','#ef4444','#8b5cf6','#ec4899','#14b8a6','#f97316','#6366f1'][di],weight:3,opacity:0.7,dashArray:di===2?'10 5':null}).addTo(map);}});
+  days.forEach((d,di)=>{const p=dayPois(di).filter(x=>x.coord);if(p.length>1){dayPolylines[di]=L.polyline(p.map(x=>x.coord),{color:['#a811eb','#0ea5e9','#f59e0b','#10b981','#ef4444','#8b5cf6','#ec4899','#14b8a6','#f97316','#6366f1'][di],weight:3,opacity:0.7,dashArray:di===2?'10 5':null}).addTo(map);}});
   addMarkers(allPois());fitAll();mapReady=true;
   // 关键：地图 tab 切回或首次显示需要 invalidateSize，否则瓦片不渲染
   setTimeout(()=>{try{map.invalidateSize();}catch(e){};fitAll();},50);
@@ -425,15 +448,27 @@ function initMap(){
 }
 function addMarkers(pois){
   markersLayer.clearLayers();
-  pois.forEach(p=>{const m=L.marker(p.coord,{icon:L.divIcon({html:`<div style="background:${themeClr[p.tag]||'#64748b'};border-radius:50%;width:16px;height:16px;box-shadow:0 2px 6px rgba(0,0,0,0.25);border:2px solid #fff"></div>`,iconSize:[16,16],iconAnchor:[8,8]})}).addTo(markersLayer);m.bindPopup(`<b>${p.name}</b>${p.day?`<br><span style="color:#D97757;font-weight:600">Day ${p.day} · ${p.time}</span>`:''}<br><span style="color:#64748b;font-size:11px">${(p.desc||'').substring(0,80)}</span><br><a href="https://uri.amap.com/navigation?to=${p.coord[1]},${p.coord[0]},${encodeURIComponent(p.name)}&mode=car&coordinate=wgs84&src=nanjiang" target="_blank" rel="noopener" style="color:#D97757;font-weight:700">🚗 导航 →</a>`);});
+  pois.filter(p=>p.coord).forEach(p=>{const color=p.status.color,m=L.marker(p.coord,{icon:L.divIcon({className:'',html:`<div class="route-marker ${p.status.key==='draft'?'is-draft':''}" style="background:${color}">${p.index}</div>`,iconSize:[27,27],iconAnchor:[13,13]})}).addTo(markersLayer);m._routeKey=p.day+'-'+p.index;m.bindPopup(`<div style="min-width:190px"><div style="font-size:10px;font-weight:800;color:${color}">D${p.day} · ${p.time} · ${p.status.label}</div><b style="display:block;font-size:13px;margin:2px 0 4px">${p.index}. ${p.name}</b><span style="color:#64748b;font-size:11px">${(p.desc||'').substring(0,100)}</span><br><button onclick="openNav('${String(p.to).replace(/'/g,"\\'")}')" style="margin-top:8px;color:#C25A3A;font-weight:800;font-size:11px">打开导航 →</button></div>`);});
 }
-function fitAll(){const a=allPois();if(a.length)map.fitBounds(a.map(p=>p.coord),{padding:[30,30],maxZoom:10});}
+function fitAll(){const a=allPois().filter(p=>p.coord);if(a.length)map.fitBounds(a.map(p=>p.coord),{padding:[30,30],maxZoom:10});}
+
+function mapListHtml(di){
+  const d=days[di],pois=dayPois(di),located=pois.filter(p=>p.coord).length;
+  const rows=pois.map(p=>`<div class="flex items-start gap-2.5 py-2.5 border-b border-brand-100/70 last:border-0"><button ${p.coord?`onclick="focusMapPoint(${di},${p.index})"`:''} class="route-marker shrink-0 ${p.status.key==='draft'?'is-draft':''}" style="width:25px;height:25px;background:${p.status.color};${p.coord?'':'opacity:.45'}">${p.index}</button><div class="flex-1 min-w-0"><div class="flex items-center gap-1.5"><span class="text-[11px] font-bold text-ink truncate">${p.name}</span><span class="text-[9px] shrink-0" style="color:${p.status.color}">${p.status.label}</span></div><div class="text-[9px] text-slate mt-0.5">${p.time}${p.coord?' · 地图已定位':' · 仅提供导航搜索'}</div></div><button onclick="openNav('${String(p.to).replace(/'/g,"\\'")}')" class="text-[10px] font-bold text-brand-600 bg-brand-50 rounded-lg px-2 py-1.5 shrink-0">导航</button></div>`).join('');
+  return `<div class="flex items-center justify-between mb-2"><div><div class="text-xs font-black text-ink">D${d.day} · ${d.title}</div><div class="text-[9px] text-slate mt-0.5">${pois.length}个导航目标 · ${located}个已定位</div></div>${d.draft?'<span class="text-[9px] font-bold text-amber-700 bg-amber-50 border border-amber-200 rounded-lg px-2 py-1">AI草案</span>':''}</div><div>${rows}</div>`;
+}
+function focusMapPoint(di,index){
+  if(!mapReady)return;const p=dayPois(di).find(x=>x.index===index);if(!p||!p.coord)return;
+  map.setView(p.coord,Math.max(map.getZoom(),12),{animate:true});
+  markersLayer.eachLayer(m=>{if(m._routeKey===(di+1)+'-'+index)m.openPopup();});
+}
 
 function filterMap(di){
-  document.querySelectorAll('#mf button').forEach((b,i)=>{b.className='flex-shrink-0 px-3 py-1.5 rounded-xl text-[11px] font-semibold transition-all active:scale-95 '+(i===di+1||(di===-1&&i===days.length)?'tab-on':'tab-off');});
+  document.querySelectorAll('#mf button').forEach((b,i)=>{b.className='flex-shrink-0 px-3 py-1.5 rounded-xl text-[11px] font-semibold transition-all active:scale-95 '+((di===-1&&i===days.length)||(di>=0&&i===di)?'tab-on':'tab-off');});
   if(!mapReady)initMap();
   dayPolylines.forEach(l=>{if(l)l.remove();});
-  if(di===-1){days.forEach((d,i)=>{if(dayPolylines[i])dayPolylines[i].addTo(map);});addMarkers(allPois());fitAll();}else{const p=dayPois(di);addMarkers(p.map(x=>({...x,day:di+1})));if(dayPolylines[di])dayPolylines[di].addTo(map);if(p.length)map.fitBounds(p.map(x=>x.coord),{padding:[40,40],maxZoom:13});else map.setView([39.2,76.5],6);}
+  const info=document.getElementById('mapInfo');
+  if(di===-1){days.forEach((d,i)=>{if(dayPolylines[i])dayPolylines[i].addTo(map);});addMarkers(allPois());fitAll();if(info)info.innerHTML='<div class="text-xs font-black text-ink mb-1">全程路线总览</div><div class="text-[10px] leading-relaxed">连线仅表示行程先后顺序，不代表实际道路或实时导航。选择具体日期，可查看编号地点与备选状态。</div>';}else{const p=dayPois(di),located=p.filter(x=>x.coord);addMarkers(p);if(dayPolylines[di])dayPolylines[di].addTo(map);if(located.length)map.fitBounds(located.map(x=>x.coord),{padding:[40,40],maxZoom:13});else map.setView([39.2,76.5],6);if(info)info.innerHTML=mapListHtml(di);}
 }
 
 // ====== RENDER ======
@@ -569,7 +604,7 @@ function rReminders(){
 function rMap(){
   const kashiFav=favorites.filter(x=>x.city==='喀什');
   const favHtml=kashiFav.length?`<details class="glass rounded-2xl p-3.5 mt-3 anim-in"><summary class="cursor-pointer text-xs font-black text-ink">⭐ 喀什高德收藏 · ${kashiFav.length}处</summary><p class="text-[10px] text-slate mt-1 mb-3">行程点与沿途备选 · 点击名称直接导航</p><div class="grid grid-cols-2 gap-2">${kashiFav.map(x=>`<button onclick="openNav('${x.n}')" class="text-left bg-white rounded-xl px-3 py-2.5 border border-brand-100 active:scale-[0.98]"><span class="block text-[11px] font-bold text-ink">${x.n}</span><span class="block text-[9px] mt-0.5 ${x.cat==='行程'?'text-brand-600':'text-slate'}">${x.cat} · 导航 →</span></button>`).join('')}</div></details>`:'';
-  return `<div class="glass rounded-2xl p-3 mb-3 anim-in"><h2 class="text-xs font-bold" style="color:var(--ink)">交互地图</h2><p class="text-[10px] text-slate mt-0.5">点击标记看详情 · 双指缩放 · 按天数切换路线</p></div><div class="no-scroll flex gap-1.5 overflow-x-auto pb-2 mb-2" id="mf">${days.map((d,i)=>`<button onclick="filterMap(${i})" id="md${i}" class="flex-shrink-0 px-3 py-1.5 rounded-xl text-[11px] font-semibold transition-all active:scale-95 ${i===0?'tab-on':'tab-off'}">D${d.day}</button>`).join('')}<button onclick="filterMap(-1)" id="mdAll" class="flex-shrink-0 px-3 py-1.5 rounded-xl text-[11px] font-semibold transition-all active:scale-95 tab-off">全部</button></div><div class="glass rounded-2xl overflow-hidden mb-3" style="height:420px" id="mapC"><div id="map" style="width:100%;height:100%;min-height:420px"></div></div><div class="glass rounded-2xl p-3 text-[11px] text-slate anim-in" id="mapInfo">点击地图标记查看详情 · 双指缩放 · 按天筛选路线</div>${favHtml}`;
+  return `<div class="glass rounded-2xl p-3 mb-3 anim-in"><div class="flex items-center justify-between"><div><h2 class="text-sm font-black" style="color:var(--ink)">每日路线地图</h2><p class="text-[10px] text-slate mt-0.5">编号对应行程顺序 · 地点清单与地图联动</p></div><div class="text-[9px] font-bold text-brand-600 bg-brand-50 rounded-lg px-2 py-1">高德导航 ↗</div></div><div class="flex flex-wrap gap-x-3 gap-y-1 mt-3 text-[9px] text-slate"><span class="flex items-center gap-1"><i class="map-status-dot" style="background:#3F8A5B"></i>已确认</span><span class="flex items-center gap-1"><i class="map-status-dot" style="background:#3B82C4"></i>顺路备选</span><span class="flex items-center gap-1"><i class="map-status-dot" style="background:#D97757"></i>待核实</span><span class="flex items-center gap-1"><i class="map-status-dot" style="background:#9A7B4F"></i>AI草案</span></div><p class="text-[9px] text-slate mt-2 leading-relaxed">地图连线只表示先后顺序，不是实际驾车道路；出发时请点击“导航”打开高德。</p></div><div class="no-scroll flex gap-1.5 overflow-x-auto pb-2 mb-2" id="mf">${days.map((d,i)=>`<button onclick="filterMap(${i})" id="md${i}" class="flex-shrink-0 px-3 py-1.5 rounded-xl text-[11px] font-semibold transition-all active:scale-95 ${i===0?'tab-on':'tab-off'}">D${d.day}${d.draft?' · 草案':''}</button>`).join('')}<button onclick="filterMap(-1)" id="mdAll" class="flex-shrink-0 px-3 py-1.5 rounded-xl text-[11px] font-semibold transition-all active:scale-95 tab-off">全程</button></div><div class="glass rounded-2xl overflow-hidden mb-3" style="height:460px" id="mapC"><div id="map" style="width:100%;height:100%;min-height:460px"></div></div><div class="glass rounded-2xl p-3.5 text-[11px] text-slate anim-in" id="mapInfo">${mapListHtml(0)}</div>${favHtml}`;
 }
 function switchFoodCat(i){kashiCat=i;if(activeView===3)document.getElementById('mainContent').innerHTML=rFood();}
 function rFood(){
