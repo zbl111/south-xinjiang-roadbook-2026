@@ -9,7 +9,8 @@
   <meta name="apple-mobile-web-app-title" content="秋行南疆">
   <meta name="theme-color" content="#D97757">
   <meta name="description" content="秋行南疆 · 2026南疆十一日旅行路书">
-  <title>秋行南疆 · 公开分享版</title>
+  <meta name="robots" content="noindex,nofollow,noarchive">
+  <title>秋行南疆 · 同行共享版</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -61,15 +62,6 @@
 *{-webkit-tap-highlight-color:transparent;outline:none;box-sizing:border-box}
 html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI","PingFang SC","HarmonyOS Sans SC","Microsoft YaHei",sans-serif;background:var(--paper);color:var(--ink);-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;padding-top:env(safe-area-inset-top);padding-bottom:calc(env(safe-area-inset-bottom) + 96px);line-height:1.5;background-image:radial-gradient(1200px 600px at 12% -8%,rgba(217,119,87,.06),transparent 55%),radial-gradient(900px 500px at 100% 4%,rgba(194,90,58,.05),transparent 50%);background-attachment:fixed}
-body.rb-locked{padding:0;overflow:hidden}
-body.rb-locked>:not(#accessGate){display:none!important}
-#accessGate{min-height:100vh;min-height:100dvh;padding:calc(env(safe-area-inset-top) + 24px) 22px calc(env(safe-area-inset-bottom) + 24px);display:flex;align-items:center;justify-content:center;background:radial-gradient(600px 360px at 90% 4%,rgba(217,119,87,.20),transparent 60%),linear-gradient(160deg,#FFF9F4 0%,#F5E9DF 100%)}
-#accessGate[hidden]{display:none!important}
-.access-card{width:100%;max-width:390px;padding:28px 24px;background:rgba(255,255,255,.94);border:1px solid rgba(232,223,211,.95);border-radius:26px;box-shadow:0 20px 60px rgba(74,32,16,.13)}
-.access-input{width:100%;height:48px;border:1px solid var(--sand);border-radius:14px;padding:0 15px;background:var(--paper);font-size:16px;color:var(--ink);transition:border-color .2s,box-shadow .2s}
-.access-input:focus{border-color:var(--terracotta);box-shadow:0 0 0 3px rgba(217,119,87,.13)}
-.access-submit{width:100%;height:48px;margin-top:12px;border:0;border-radius:14px;background:var(--brand-gradient);color:#fff;font-size:14px;font-weight:800;box-shadow:0 6px 18px rgba(194,90,58,.28);cursor:pointer}
-.access-submit:active{transform:scale(.985)}
 ::selection{background:rgba(217,119,87,.22)}
 ::-webkit-scrollbar{width:0;height:0;background:transparent}
 
@@ -189,51 +181,13 @@ h3{font-size:13px;font-weight:700;letter-spacing:0}
 </style>
 <script src="data.js"></script>
 </head>
-<body class="min-h-screen rb-locked">
-
-<section id="accessGate" aria-labelledby="accessTitle">
-  <form class="access-card" id="accessForm">
-    <div class="w-12 h-12 rounded-2xl flex items-center justify-center text-xl font-black shadow-md" style="background:var(--brand-gradient);color:#fff">疆</div>
-    <div class="text-[10px] font-bold tracking-[0.2em] mt-5" style="color:var(--terracotta-dark)">FAMILY ROADBOOK</div>
-    <h1 id="accessTitle" style="font-size:24px;margin-top:5px">秋行南疆</h1>
-    <p style="font-size:12px;line-height:1.7;color:var(--slate);margin:9px 0 18px">这是家庭旅行资料，请输入访问密码后查看。</p>
-    <label for="accessPassword" style="display:block;font-size:11px;font-weight:700;color:var(--ink-secondary);margin-bottom:6px">访问密码</label>
-    <input class="access-input" id="accessPassword" type="password" autocomplete="current-password" placeholder="请输入密码" required>
-    <button class="access-submit" type="submit">进入路书</button>
-    <p id="accessError" role="alert" style="min-height:18px;margin-top:10px;font-size:11px;color:#B53B32"></p>
-    <p style="font-size:9px;line-height:1.6;color:var(--slate);margin-top:4px">密码仅用于家庭分享，请勿转发公开链接和密码。</p>
-  </form>
-</section>
-
-<script>
-(function(){
-  var ACCESS_HASH='19bcfc9870afd005552f5d67765cdd83d4be06ec5b37e38e1680fdbc8be2f707';
-  var ACCESS_SESSION_KEY='south_xinjiang_family_access_v1';
-  var gate=document.getElementById('accessGate');
-  var form=document.getElementById('accessForm');
-  var input=document.getElementById('accessPassword');
-  var error=document.getElementById('accessError');
-  function unlock(){sessionStorage.setItem(ACCESS_SESSION_KEY,'yes');document.body.classList.remove('rb-locked');gate.hidden=true;}
-  if(sessionStorage.getItem(ACCESS_SESSION_KEY)==='yes'){unlock();return;}
-  form.addEventListener('submit',async function(ev){
-    ev.preventDefault();error.textContent='';
-    try{
-      var bytes=new TextEncoder().encode(input.value);
-      var digest=await crypto.subtle.digest('SHA-256',bytes);
-      var hash=Array.from(new Uint8Array(digest)).map(function(b){return b.toString(16).padStart(2,'0');}).join('');
-      if(hash===ACCESS_HASH){unlock();}
-      else{error.textContent='密码不正确，请重新输入。';input.select();}
-    }catch(e){error.textContent='当前浏览器无法校验密码，请换用新版浏览器。';}
-  });
-  setTimeout(function(){input.focus();},100);
-})();
-</script>
+<body class="min-h-screen">
 
 <header class="sticky top-0 z-50 px-3 pt-3 pb-1">
   <div class="header-blur px-5 py-3.5">
     <div class="flex items-center justify-between">
       <div>
-        <div class="text-[9px] font-bold tracking-[0.22em] uppercase" style="color:var(--terracotta)">秋季 · 公开分享版</div>
+        <div class="text-[9px] font-bold tracking-[0.16em] uppercase" style="color:var(--terracotta)">同行共享版 · 请勿公开转发</div>
         <h1 class="text-[21px] font-black mt-1 tracking-tight leading-tight" style="color:var(--ink)">秋行南疆 · 十一日路书</h1>
       </div>
       <div class="flex flex-col items-end gap-1 shrink-0">
