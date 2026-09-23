@@ -556,7 +556,7 @@ function rReminders(){
   return '<div class="space-y-4 anim-in"><div class="glass-heavy p-5" style="background:linear-gradient(135deg,#FFF7F0,#FAE8DC);border-color:#F0D5C8"><div style="font-size:10px;font-weight:800;letter-spacing:.17em;color:var(--terracotta-dark)">REMINDERS · D0</div><h1 style="font-size:21px;margin-top:4px">关键时间与出发提醒</h1><p style="font-size:11px;line-height:1.65;color:var(--ink-secondary);margin-top:7px">自动突出下一项。车次、住宿和接送信息以最终确认结果为准。</p></div>'+group('接下来',pending,false)+group('已过去',past,true)+'</div>';
 }
 function rMap(){
-  const favCities=['库尔勒','喀什','帕米尔沿线','塔县','莎车','和田','库车'];
+  const favCities=['库尔勒','喀什','帕米尔沿线','塔县','莎车','莎车沿线','和田','G580沿线','阿拉尔','库车'];
   const favGroups=favCities.map(city=>{
     const list=favorites.filter(x=>x.city===city);
     if(!list.length)return '';
